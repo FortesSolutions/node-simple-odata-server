@@ -20,7 +20,6 @@
     "test": "standard && mocha --exit -R spec"
   },
   "dependencies": {
-    "@jsreport/odata-parser": "1.0.1",
     "methods": "1.1.2",
     "path-to-regexp": "6.3.0",
     "safe-buffer": "5.2.1",
@@ -34,7 +33,7 @@
     "should": "13.2.3",
     "standard": "17.0.0",
     "supertest": "6.2.4",
-    "xml2js": "0.5.0"
+    "xml2js": "^0.4.23"
   },
   "standard": {
     "ignore": "example/**",

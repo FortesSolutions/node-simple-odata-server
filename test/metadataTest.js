@@ -2,13 +2,13 @@
 require('should')
 const model = require('./model.js')
 const metadata = require('../lib/metadata.js')
-const xml2js = require('xml2js')
+const parseString = require('xml2js').parseString
 
 describe('metadata', function () {
   it('xml should be parseable', function (done) {
-    const xml = metadata({ model })
+    const xml = metadata(model)
 
-    xml2js.Parser().parseString(xml, function (err, data) {
+    parseString(xml, function (err, data) {
       if (err) done(err)
 
       data['edmx:Edmx'].should.be.ok()

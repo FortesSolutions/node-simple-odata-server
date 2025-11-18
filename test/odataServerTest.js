@@ -2,7 +2,7 @@
 require('should')
 const request = require('supertest')
 const http = require('http')
-const ODataServer = require('../index.js')
+const createODataServer = require('../index.js')
 const model = require('./model.js')
 
 describe('odata server', function () {
@@ -10,7 +10,7 @@ describe('odata server', function () {
   let server
 
   beforeEach(function () {
-    odataServer = ODataServer('http://localhost:1234')
+    odataServer = createODataServer('http://localhost:1234')
     odataServer.model(model)
     server = http.createServer(function (req, res) {
       odataServer.handle(req, res)
@@ -106,7 +106,8 @@ describe('odata server', function () {
 
   it('get $count should return number of entries', function (done) {
     odataServer.query(function (col, query, req, cb) {
-      cb(null, 1)
+      // Return object with value property for $count
+      cb(null, { value: 1 })
     })
 
     odataServer.on('odata-error', done)
@@ -152,7 +153,8 @@ describe('odata server', function () {
     odataServer.query(function (col, query, req, cb) {
       cb(null, [{
         num: 1,
-        a: 'b'
+        a: 'b',
+        image: 'aaaa'
       }])
     })
     odataServer.on('odata-error', done)
@@ -162,6 +164,7 @@ describe('odata server', function () {
       .expect(function (res) {
         res.body.value.should.be.ok()
         res.body.value[0].should.have.property('num')
+        res.body.value[0].should.have.property('image')
         res.body.value[0].should.not.have.property('a')
         res.body['@odata.context'].should.be.eql(expectedResult.context)
       })
@@ -176,9 +179,8 @@ describe('odata server', function () {
       num: 1
     }
     odataServer.query(function (col, query, req, cb) {
-      cb(null, {
-        num: 1
-      })
+      // Return object with value property for single entity
+      cb(null, { value: result })
     })
 
     odataServer.on('odata-error', done)
@@ -244,6 +246,7 @@ describe('odata server', function () {
       .expect(function (res) {
         res.body.value.should.be.ok()
         res.body.value[0].should.have.property('test')
+        res.body.value[0].should.have.property('_id')
         res.body.value[0].should.not.have.property('a')
       })
       .end(function (err, res) {
@@ -278,7 +281,7 @@ describe('odata server', function () {
   })
 
   it('get with error should be propagated to response', function (done) {
-    odataServer.query(function (query, req, cb) {
+    odataServer.query(function (col, query, req, cb) {
       cb(new Error('test'))
     })
 
@@ -587,7 +590,7 @@ describe('odata server with cors', function () {
   let server
 
   it('options on * should response 200 with Access-Control-Allow-Origin', function (done) {
-    odataServer = ODataServer('http://localhost:1234')
+    odataServer = createODataServer('http://localhost:1234')
     odataServer.model(model).cors('test.com')
     server = http.createServer(function (req, res) {
       odataServer.handle(req, res)
@@ -603,7 +606,7 @@ describe('odata server with cors', function () {
   })
 
   it('get on * should response 200 with Access-Control-Allow-Origin', function (done) {
-    odataServer = ODataServer('http://localhost:1234')
+    odataServer = createODataServer('http://localhost:1234')
     odataServer.model(model).cors('test.com')
     server = http.createServer(function (req, res) {
       odataServer.handle(req, res)
@@ -622,7 +625,7 @@ describe('odata server with cors', function () {
   })
 
   it('post on * should response 200 with Access-Control-Allow-Origin', function (done) {
-    odataServer = ODataServer('http://localhost:1234')
+    odataServer = createODataServer('http://localhost:1234')
     odataServer.model(model).cors('test.com')
     server = http.createServer(function (req, res) {
       odataServer.handle(req, res)
@@ -652,7 +655,7 @@ describe('odata server with cors', function () {
   })
 
   it('delete on * should response 200 with Access-Control-Allow-Origin', function (done) {
-    odataServer = ODataServer('http://localhost:1234')
+    odataServer = createODataServer('http://localhost:1234')
     odataServer.model(model).cors('test.com')
     server = http.createServer(function (req, res) {
       odataServer.handle(req, res)
@@ -671,7 +674,7 @@ describe('odata server with cors', function () {
   })
 
   it('patch on * should response 200 with Access-Control-Allow-Origin', function (done) {
-    odataServer = ODataServer('http://localhost:1234')
+    odataServer = createODataServer('http://localhost:1234')
     odataServer.model(model).cors('test.com')
     server = http.createServer(function (req, res) {
       odataServer.handle(req, res)
