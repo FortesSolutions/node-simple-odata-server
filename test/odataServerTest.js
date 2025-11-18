@@ -151,11 +151,16 @@ describe('odata server', function () {
       context: 'http://localhost:1234/$metadata#users(' + selectedField1 + ',' + selectedField2 + ')'
     }
     odataServer.query(function (col, query, req, cb) {
-      cb(null, [{
-        num: 1,
-        a: 'b',
-        image: 'aaaa'
-      }])
+      cb(null, {
+        count: 1,
+        value: [
+          {
+            num: 1,
+            a: 'b',
+            image: 'aaaa'
+          }
+        ]
+      })
     })
     odataServer.on('odata-error', done)
     request(server)
@@ -599,7 +604,7 @@ describe('odata server with cors', function () {
     request(server)
       .options('/$metadata')
       .expect('Access-Control-Allow-Origin', /test.com/)
-      .expect(200)
+      .expect(200) // OK
       .end(function (err, res) {
         done(err)
       })
@@ -612,19 +617,22 @@ describe('odata server with cors', function () {
       odataServer.handle(req, res)
     })
     odataServer.query(function (collection, query, req, cb) {
-      cb(null)
+      cb(null, {
+        count: 0,
+        value: []
+      })
     })
 
     request(server)
       .get('/users')
       .expect('Access-Control-Allow-Origin', /test.com/)
-      .expect(200)
+      .expect(200) // OK
       .end(function (err, res) {
         done(err)
       })
   })
 
-  it('post on * should response 200 with Access-Control-Allow-Origin', function (done) {
+  it('post on * should response 201 with Access-Control-Allow-Origin', function (done) {
     odataServer = createODataServer('http://localhost:1234')
     odataServer.model(model).cors('test.com')
     server = http.createServer(function (req, res) {
@@ -648,13 +656,13 @@ describe('odata server with cors', function () {
       .send({
         test: 'foo'
       })
-      .expect(201)
+      .expect(201) // Created
       .end(function (err, res) {
         done(err)
       })
   })
 
-  it('delete on * should response 200 with Access-Control-Allow-Origin', function (done) {
+  it('delete on * should response 204 with Access-Control-Allow-Origin', function (done) {
     odataServer = createODataServer('http://localhost:1234')
     odataServer.model(model).cors('test.com')
     server = http.createServer(function (req, res) {
@@ -667,13 +675,13 @@ describe('odata server with cors', function () {
     request(server)
       .delete("/users('1')")
       .expect('Access-Control-Allow-Origin', /test.com/)
-      .expect(204)
+      .expect(204) // No Content
       .end(function (err, res) {
         done(err)
       })
   })
 
-  it('patch on * should response 200 with Access-Control-Allow-Origin', function (done) {
+  it('patch on * should response 204 with Access-Control-Allow-Origin', function (done) {
     odataServer = createODataServer('http://localhost:1234')
     odataServer.model(model).cors('test.com')
     server = http.createServer(function (req, res) {
@@ -694,7 +702,7 @@ describe('odata server with cors', function () {
         test: 'foo'
       })
       .expect('Access-Control-Allow-Origin', /test.com/)
-      .expect(204)
+      .expect(204) // No Content
       .end(function (err, res) {
         done(err)
       })
