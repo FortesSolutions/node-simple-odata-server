@@ -31,10 +31,10 @@
     "mocha": "10.1.0",
     "mongodb": "4.7.0",
     "nedb": "1.8.0",
-    "should": "13.2.3",
     "semistandard": "17.0.0",
-    "supertest": "6.2.4",
-    "xml2js": "^0.4.23"
+    "should": "13.2.3",
+    "supertest": "7.1.4",
+    "xml2js": "0.6.2"
   },
   "standard": {
     "ignore": "example/**",
