@@ -5,6 +5,11 @@ const http = require('http')
 const createODataServer = require('../index.js')
 const model = require('./model.js')
 
+const HTTP_OK = 200
+const HTTP_CREATED = 201
+const HTTP_NO_CONTENT = 204
+const HTTP_INTERNAL_SERVER_ERROR = 500
+
 describe('odata server', function () {
   let odataServer
   let server
@@ -29,7 +34,7 @@ describe('odata server', function () {
     request(server)
       .get('/users')
       .expect('Content-Type', /application\/json/)
-      .expect(200)
+      .expect(HTTP_OK)
       .expect(function (res) {
         res.body.value.should.be.ok()
         res.body.value.length.should.be.eql(1)
@@ -52,7 +57,7 @@ describe('odata server', function () {
     request(server)
       .get('/users?foo=a')
       .expect('Content-Type', /application\/json/)
-      .expect(200)
+      .expect(HTTP_OK)
       .expect(function (res) {
         res.body.value.should.be.ok()
         res.body.value.length.should.be.eql(1)
@@ -75,7 +80,7 @@ describe('odata server', function () {
 
     request(server)
       .get('/users')
-      .expect(200)
+      .expect(HTTP_OK)
       .expect(function (res) {
         res.body.value.should.be.ok()
         res.body.value[0].should.have.property('test')
@@ -97,7 +102,7 @@ describe('odata server', function () {
     odataServer.on('odata-error', done)
     request(server)
       .get('/users')
-      .expect(200)
+      .expect(HTTP_OK)
       .expect('Content-Type', /odata.metadata=minimal/)
       .end(function (err, res) {
         done(err)
@@ -114,7 +119,7 @@ describe('odata server', function () {
 
     request(server)
       .get('/users/$count')
-      .expect(200)
+      .expect(HTTP_OK)
       .expect(function (res) {
         res.body.value.should.be.eql(1)
       })
@@ -133,7 +138,7 @@ describe('odata server', function () {
 
     request(server)
       .get('/users(\'123\')')
-      .expect(200)
+      .expect(HTTP_OK)
       .expect(function (res) {
         res.body.should.not.have.property('0')
         res.body.test.should.be.eql('a')
@@ -165,7 +170,7 @@ describe('odata server', function () {
     odataServer.on('odata-error', done)
     request(server)
       .get('/users?$select=' + selectedField1 + ',' + selectedField2)
-      .expect(200)
+      .expect(HTTP_OK)
       .expect(function (res) {
         res.body.value.should.be.ok()
         res.body.value[0].should.have.property('num')
@@ -191,7 +196,7 @@ describe('odata server', function () {
     odataServer.on('odata-error', done)
     request(server)
       .get('/users($' + key + ')?$select=num')
-      .expect(200)
+      .expect(HTTP_OK)
       .expect(function (res) {
         res.body.value.should.be.ok()
         res.body['@odata.context'].should.be.eql('http://localhost:1234/$metadata#users(num)/$entity')
@@ -223,10 +228,11 @@ describe('odata server', function () {
           '@odata.type': 'jsreport.AddressType'
         }]
       })
-      .expect(201)
+      .expect(HTTP_CREATED)
       .expect(function (res) {
         res.body.should.be.ok()
         res.body._id.should.be.ok()
+        res.body.should.have.property('test')
         res.body.should.not.have.property('a')
       })
       .end(function (err, res) {
@@ -247,7 +253,7 @@ describe('odata server', function () {
 
     request(server)
       .get("/users('foo')")
-      .expect(200)
+      .expect(HTTP_OK)
       .expect(function (res) {
         res.body.value.should.be.ok()
         res.body.value[0].should.have.property('test')
@@ -274,7 +280,7 @@ describe('odata server', function () {
 
     request(server)
       .get('/users?$count=true')
-      .expect(200)
+      .expect(HTTP_OK)
       .expect(function (res) {
         res.body.value.should.be.ok()
         res.body.value[0].should.have.property('test')
@@ -292,7 +298,7 @@ describe('odata server', function () {
 
     request(server)
       .get('/users')
-      .expect(500)
+      .expect(HTTP_INTERNAL_SERVER_ERROR)
       .end(function (err, res) {
         done(err)
       })
@@ -312,7 +318,7 @@ describe('odata server', function () {
       .send({
         test: 'foo'
       })
-      .expect(201)
+      .expect(HTTP_CREATED)
       .expect(function (res) {
         res.body.should.be.ok()
         res.body._id.should.be.ok()
@@ -336,7 +342,7 @@ describe('odata server', function () {
       .send({
         image: 'aaaa'
       })
-      .expect(201)
+      .expect(HTTP_CREATED)
       .expect(function (res) {
         res.body.should.be.ok()
         res.body.image.should.be.instanceOf(String)
@@ -357,7 +363,7 @@ describe('odata server', function () {
       .send({
         image: 'aaaa'
       })
-      .expect(204)
+      .expect(HTTP_NO_CONTENT)
       .end(function (err, res) {
         done(err)
       })
@@ -373,7 +379,7 @@ describe('odata server', function () {
       .send({
         test: 'foo'
       })
-      .expect(500)
+      .expect(HTTP_INTERNAL_SERVER_ERROR)
       .end(function (err, res) {
         done(err)
       })
@@ -398,7 +404,7 @@ describe('odata server', function () {
           '@odata.type': 'jsreport.AddressType'
         }]
       })
-      .expect(204)
+      .expect(HTTP_NO_CONTENT)
       .end(function (err, res) {
         done(err)
       })
@@ -414,7 +420,7 @@ describe('odata server', function () {
       .send({
         test: 'foo'
       })
-      .expect(500)
+      .expect(HTTP_INTERNAL_SERVER_ERROR)
       .end(function (err, res) {
         done(err)
       })
@@ -427,7 +433,7 @@ describe('odata server', function () {
 
     request(server)
       .delete("/users('1')")
-      .expect(204)
+      .expect(HTTP_NO_CONTENT)
       .end(function (err, res) {
         done(err)
       })
@@ -437,7 +443,7 @@ describe('odata server', function () {
     request(server)
       .get('/$metadata')
       .expect('Content-Type', /application\/xml/)
-      .expect(200)
+      .expect(HTTP_OK)
       .end(function (err, res) {
         done(err)
       })
@@ -447,7 +453,7 @@ describe('odata server', function () {
     request(server)
       .get('/')
       .expect('Content-Type', /application\/json/)
-      .expect(200)
+      .expect(HTTP_OK)
       .expect(function (res) {
         res.body.value.length.should.be.eql(1)
         res.body.value[0].name.should.be.eql('users')
@@ -604,7 +610,7 @@ describe('odata server with cors', function () {
     request(server)
       .options('/$metadata')
       .expect('Access-Control-Allow-Origin', /test.com/)
-      .expect(200) // OK
+      .expect(HTTP_OK)
       .end(function (err, res) {
         done(err)
       })
@@ -626,7 +632,7 @@ describe('odata server with cors', function () {
     request(server)
       .get('/users')
       .expect('Access-Control-Allow-Origin', /test.com/)
-      .expect(200) // OK
+      .expect(HTTP_OK) // OK
       .end(function (err, res) {
         done(err)
       })
@@ -656,7 +662,7 @@ describe('odata server with cors', function () {
       .send({
         test: 'foo'
       })
-      .expect(201) // Created
+      .expect(HTTP_CREATED)
       .end(function (err, res) {
         done(err)
       })
@@ -675,7 +681,7 @@ describe('odata server with cors', function () {
     request(server)
       .delete("/users('1')")
       .expect('Access-Control-Allow-Origin', /test.com/)
-      .expect(204) // No Content
+      .expect(HTTP_NO_CONTENT)
       .end(function (err, res) {
         done(err)
       })
@@ -702,7 +708,7 @@ describe('odata server with cors', function () {
         test: 'foo'
       })
       .expect('Access-Control-Allow-Origin', /test.com/)
-      .expect(204) // No Content
+      .expect(HTTP_NO_CONTENT)
       .end(function (err, res) {
         done(err)
       })
