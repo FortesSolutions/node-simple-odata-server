@@ -40,7 +40,7 @@ describe('odata server', function () {
         res.body.value.length.should.be.eql(1);
         res.body.value[0].test.should.be.eql('a');
       })
-      .end(function (err, res) {
+      .end(function (err) {
         done(err);
       });
   });
@@ -63,7 +63,7 @@ describe('odata server', function () {
         res.body.value.length.should.be.eql(1);
         res.body.value[0].test.should.be.eql('a');
       })
-      .end(function (err, res) {
+      .end(function (err) {
         done(err);
       });
   });
@@ -86,7 +86,7 @@ describe('odata server', function () {
         res.body.value[0].should.have.property('test');
         res.body.value[0].should.not.have.property('a');
       })
-      .end(function (err, res) {
+      .end(function (err) {
         done(err);
       });
   });
@@ -104,7 +104,7 @@ describe('odata server', function () {
       .get('/users')
       .expect(HTTP_OK)
       .expect('Content-Type', /odata.metadata=minimal/)
-      .end(function (err, res) {
+      .end(function (err) {
         done(err);
       });
   });
@@ -123,7 +123,7 @@ describe('odata server', function () {
       .expect(function (res) {
         res.body.value.should.be.eql(1);
       })
-      .end(function (err, res) {
+      .end(function (err) {
         done(err);
       });
   });
@@ -144,7 +144,7 @@ describe('odata server', function () {
         res.body.test.should.be.eql('a');
         Array.isArray(res.body.value).should.be.true();
       })
-      .end(function (err, res) {
+      .end(function (err) {
         done(err);
       });
   });
@@ -178,7 +178,7 @@ describe('odata server', function () {
         res.body.value[0].should.not.have.property('a');
         res.body['@odata.context'].should.be.eql(expectedResult.context);
       })
-      .end(function (err, res) {
+      .end(function (err) {
         done(err);
       });
   });
@@ -203,7 +203,7 @@ describe('odata server', function () {
         res.body.should.have.property('value');
         res.body.value.should.be.eql(result);
       })
-      .end(function (err, res) {
+      .end(function (err) {
         done(err);
       });
   });
@@ -235,7 +235,7 @@ describe('odata server', function () {
         res.body.should.have.property('test');
         res.body.should.not.have.property('a');
       })
-      .end(function (err, res) {
+      .end(function (err) {
         done(err);
       });
   });
@@ -260,7 +260,7 @@ describe('odata server', function () {
         res.body.value[0].should.have.property('_id');
         res.body.value[0].should.not.have.property('a');
       })
-      .end(function (err, res) {
+      .end(function (err) {
         done(err);
       });
   });
@@ -286,7 +286,7 @@ describe('odata server', function () {
         res.body.value[0].should.have.property('test');
         res.body.value[0].should.not.have.property('a');
       })
-      .end(function (err, res) {
+      .end(function (err) {
         done(err);
       });
   });
@@ -299,7 +299,7 @@ describe('odata server', function () {
     request(server)
       .get('/users')
       .expect(HTTP_INTERNAL_SERVER_ERROR)
-      .end(function (err, res) {
+      .end(function (err) {
         done(err);
       });
   });
@@ -324,7 +324,7 @@ describe('odata server', function () {
         res.body._id.should.be.ok();
         res.body.test.should.be.eql('foo');
       })
-      .end(function (err, res) {
+      .end(function (err) {
         done(err);
       });
   });
@@ -347,7 +347,7 @@ describe('odata server', function () {
         res.body.should.be.ok();
         res.body.image.should.be.instanceOf(String);
       })
-      .end(function (err, res) {
+      .end(function (err) {
         done(err);
       });
   });
@@ -364,7 +364,7 @@ describe('odata server', function () {
         image: 'aaaa'
       })
       .expect(HTTP_NO_CONTENT)
-      .end(function (err, res) {
+      .end(function (err) {
         done(err);
       });
   });
@@ -380,7 +380,7 @@ describe('odata server', function () {
         test: 'foo'
       })
       .expect(HTTP_INTERNAL_SERVER_ERROR)
-      .end(function (err, res) {
+      .end(function (err) {
         done(err);
       });
   });
@@ -405,7 +405,7 @@ describe('odata server', function () {
         }]
       })
       .expect(HTTP_NO_CONTENT)
-      .end(function (err, res) {
+      .end(function (err) {
         done(err);
       });
   });
@@ -421,7 +421,7 @@ describe('odata server', function () {
         test: 'foo'
       })
       .expect(HTTP_INTERNAL_SERVER_ERROR)
-      .end(function (err, res) {
+      .end(function (err) {
         done(err);
       });
   });
@@ -434,7 +434,7 @@ describe('odata server', function () {
     request(server)
       .delete("/users('1')")
       .expect(HTTP_NO_CONTENT)
-      .end(function (err, res) {
+      .end(function (err) {
         done(err);
       });
   });
@@ -444,7 +444,7 @@ describe('odata server', function () {
       .get('/$metadata')
       .expect('Content-Type', /application\/xml/)
       .expect(HTTP_OK)
-      .end(function (err, res) {
+      .end(function (err) {
         done(err);
       });
   });
@@ -460,7 +460,7 @@ describe('odata server', function () {
         res.body.value[0].name.should.be.eql('users');
         res.body.value[0].kind.should.be.eql('EntitySet');
       })
-      .end(function (err, res) {
+      .end(function (err) {
         done(err);
       });
   });
@@ -611,7 +611,7 @@ describe('odata server with cors', function () {
       .options('/$metadata')
       .expect('Access-Control-Allow-Origin', /test.com/)
       .expect(HTTP_OK)
-      .end(function (err, res) {
+      .end(function (err) {
         done(err);
       });
   });
@@ -633,7 +633,7 @@ describe('odata server with cors', function () {
       .get('/users')
       .expect('Access-Control-Allow-Origin', /test.com/)
       .expect(HTTP_OK) // OK
-      .end(function (err, res) {
+      .end(function (err) {
         done(err);
       });
   });
@@ -663,7 +663,7 @@ describe('odata server with cors', function () {
         test: 'foo'
       })
       .expect(HTTP_CREATED)
-      .end(function (err, res) {
+      .end(function (err) {
         done(err);
       });
   });
@@ -682,7 +682,7 @@ describe('odata server with cors', function () {
       .delete("/users('1')")
       .expect('Access-Control-Allow-Origin', /test.com/)
       .expect(HTTP_NO_CONTENT)
-      .end(function (err, res) {
+      .end(function (err) {
         done(err);
       });
   });
@@ -709,7 +709,7 @@ describe('odata server with cors', function () {
       })
       .expect('Access-Control-Allow-Origin', /test.com/)
       .expect(HTTP_NO_CONTENT)
-      .end(function (err, res) {
+      .end(function (err) {
         done(err);
       });
   });
