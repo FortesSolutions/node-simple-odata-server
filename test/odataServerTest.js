@@ -465,6 +465,55 @@ describe('odata server', function () {
       });
   });
 
+  it('should respect mount path when deriving router prefix', function (done) {
+    // Simulate mounting the OData server under /odata in a framework like Express.
+    // Express would call the inner handler with:
+    //   originalUrl: '/odata/...'
+    //   url: '/...'
+    const mountedServer = http.createServer(function (req, res) {
+      if (req.url.indexOf('/odata') === 0) {
+        // full path as seen by the outside world
+        req.originalUrl = req.url;
+        // path as seen by the mounted handler (mount path stripped)
+        req.url = req.url.replace('/odata', '') || '/';
+      }
+
+      odataServer.handle(req, res);
+    });
+
+    request(mountedServer)
+      .get('/odata/')
+      .expect('Content-Type', /application\/json/)
+      .expect(HTTP_OK)
+      .expect(function (res) {
+        res.body.value.length.should.be.eql(1);
+        res.body.value[0].name.should.be.eql('users');
+        res.body.value[0].kind.should.be.eql('EntitySet');
+      })
+      .end(function (err) {
+        done(err);
+      });
+  });
+
+  it('should serve $metadata correctly when mounted under a path', function (done) {
+    const mountedServer = http.createServer(function (req, res) {
+      if (req.url.indexOf('/odata') === 0) {
+        req.originalUrl = req.url;
+        req.url = req.url.replace('/odata', '') || '/';
+      }
+
+      odataServer.handle(req, res);
+    });
+
+    request(mountedServer)
+      .get('/odata/$metadata')
+      .expect('Content-Type', /application\/xml/)
+      .expect(HTTP_OK)
+      .end(function (err) {
+        done(err);
+      });
+  });
+
   it('executeQuery should fire beforeQuery listener', function (done) {
     odataServer.beforeQuery(function (col, query, req, cb) {
       col.should.be.eql('users');
