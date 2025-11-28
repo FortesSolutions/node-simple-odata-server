@@ -665,7 +665,7 @@ describe('odata server', function () {
         res.body.value.should.be.ok();
         res.body.value.length.should.be.eql(2);
         res.body.should.have.property('@odata.nextLink');
-        res.body['@odata.nextLink'].should.endWith('/users?%24top=2&%24skip=4');
+        res.body['@odata.nextLink'].should.eql('http://localhost:1234/users?%24top=2&%24skip=4');
       })
       .end(function (err) {
         done(err);
