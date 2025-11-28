@@ -643,6 +643,59 @@ describe('odata server', function () {
       isReq: true
     }, function () {});
   });
+
+  it('get collection with $top and $skip should include @odata.nextLink when nextPageSkip > 0', function (done) {
+    odataServer.query(function (col, query, req, cb) {
+      // Simulate a paged result with nextPageSkip and nextPageTop
+      cb(null, {
+        value: [
+          { test: 'a' },
+          { test: 'b' }
+        ],
+        count: 10,
+        nextPageSkip: 4,
+        nextPageTop: 2
+      });
+    });
+
+    request(server)
+      .get('/users?$top=2&$skip=2')
+      .expect(HTTP_OK)
+      .expect(function (res) {
+        res.body.value.should.be.ok();
+        res.body.value.length.should.be.eql(2);
+        res.body.should.have.property('@odata.nextLink');
+        res.body['@odata.nextLink'].should.endWith('/users?%24top=2&%24skip=4');
+      })
+      .end(function (err) {
+        done(err);
+      });
+  });
+
+  it('get collection with $top and $skip should NOT include @odata.nextLink when nextPageSkip is not present', function (done) {
+    odataServer.query(function (col, query, req, cb) {
+      // Simulate a paged result without nextPageSkip
+      cb(null, {
+        value: [
+          { test: 'a' },
+          { test: 'b' }
+        ],
+        count: 4
+      });
+    });
+
+    request(server)
+      .get('/users?$top=2&$skip=2')
+      .expect(HTTP_OK)
+      .expect(function (res) {
+        res.body.value.should.be.ok();
+        res.body.value.length.should.be.eql(2);
+        res.body.should.not.have.property('@odata.nextLink');
+      })
+      .end(function (err) {
+        done(err);
+      });
+  });
 });
 
 describe('odata server with cors', function () {
