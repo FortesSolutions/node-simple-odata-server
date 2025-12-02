@@ -4,8 +4,8 @@
  * Simple OData server with adapters for mongodb and nedb
  */
 
-const ODataServer = require('./lib/odataServer.js')
+const ODataServer = require('./lib/odataServer.js');
 
 module.exports = function (options) {
-  return new ODataServer(options)
-}
+  return new ODataServer(options);
+};

@@ -1,45 +1,49 @@
 {
   "name": "simple-odata-server",
-  "version": "1.1.2",
+  "version": "1.2.2",
   "description": "OData server with adapter for mongodb and nedb",
-  "main": "index.js",
-  "scripts": {
-    "test": "standard && mocha --exit -R spec"
-  },
-  "author": "Jan Blaha",
-  "license": "MIT",
-  "repository": "pofider/node-simple-odata-server",
   "keywords": [
     "OData",
     "server",
     "mongodb",
     "nedb"
   ],
+  "repository": "pofider/node-simple-odata-server",
+  "license": "MIT",
+  "author": "Jan Blaha",
+  "main": "index.js",
+  "files": [
+    "lib",
+    "index.js"
+  ],
+  "scripts": {
+    "test": "semistandard && mocha --exit -R spec",
+    "pretty-and-lint": "semistandard --fix"
+  },
+  "dependencies": {
+    "methods": "1.1.2",
+    "path-to-regexp": "6.3.0",
+    "safe-buffer": "5.2.1",
+    "xmlbuilder": "15.1.1"
+  },
+  "devDependencies": {
+    "eslint": "8.19.0",
+    "mocha": "^10.8.2",
+    "mongodb": "6.10.0",
+    "semistandard": "17.0.0",
+    "should": "13.2.3",
+    "supertest": "7.1.4",
+    "xml2js": "0.6.2"
+  },
+  "overrides": {
+    "braces": "^3.0.3",
+    "brace-expansion": "^2.0.2"
+  },
   "standard": {
     "ignore": "example/**",
     "env": {
       "mocha": true,
       "node": true
     }
-  },
-  "dependencies": {
-    "methods": "1.1.2",
-    "path-to-regexp": "0.1.12",
-    "safe-buffer": "5.2.1",
-    "xmlbuilder": "15.1.1"
-  },
-  "devDependencies": {
-    "eslint": "8.19.0",
-    "mocha": "10.1.0",
-    "mongodb": "4.7.0",
-    "nedb": "1.8.0",
-    "should": "13.2.3",
-    "standard": "17.0.0",
-    "supertest": "6.2.4",
-    "xml2js": "0.5.0"
-  },
-  "files": [
-    "lib",
-    "index.js"
-  ]
+  }
 }
