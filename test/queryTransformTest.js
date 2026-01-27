@@ -91,14 +91,43 @@ describe('transform', function () {
     result.$filter.$or[1].LastName.$gt.should.be.eql('Doe');
   });
 
-  it('$filter substringof  to regex', function () {
+  it('$filter contains  to regex', function () {
     transform({
       $filter: {
         type: 'functioncall',
-        func: 'substringof',
+        func: 'contains',
         args: [{ type: 'literal', value: 'foo' }, { type: 'property', name: 'data' }]
       }
     }).$filter.data.should.be.eql(/foo/);
+  });
+
+  it("Name eq 'John' or contains(LastName, 'Do')", function () {
+    const result = transform({
+      $filter: {
+        type: 'or',
+        left: {
+          type: 'eq',
+          left: {
+            type: 'property',
+            name: 'Name'
+          },
+          right: {
+            type: 'literal',
+            value: 'John'
+          }
+        },
+        right: {
+          type: 'functioncall',
+          func: 'contains',
+          args: [{ type: 'property', name: 'LastName' }, { type: 'literal', value: 'Do' }]
+        }
+      }
+    });
+
+    result.$filter.$or.should.be.ok();
+    result.$filter.$or.length.should.be.eql(2);
+    result.$filter.$or[0].Name.should.be.eql('John');
+    result.$filter.$or[1].LastName.should.be.eql(/Do/);
   });
 
   it('$select should create mongo style projection', function () {
