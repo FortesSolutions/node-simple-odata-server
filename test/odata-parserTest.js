@@ -157,11 +157,11 @@ describe('odata.parser grammar', function () {
     assert.equal(ast.$filter.right.right.right.value, 'Aro');
   });
 
-  it('should parse substringof $filter', function () {
-    const ast = parser.parse("$filter=substringof('nginx', Data)");
+  it('should parse contains $filter', function () {
+    const ast = parser.parse("$filter=contains('nginx', Data)");
 
     assert.equal(ast.$filter.type, 'functioncall');
-    assert.equal(ast.$filter.func, 'substringof');
+    assert.equal(ast.$filter.func, 'contains');
 
     assert.equal(ast.$filter.args[0].type, 'literal');
     assert.equal(ast.$filter.args[0].value, 'nginx');
@@ -170,40 +170,40 @@ describe('odata.parser grammar', function () {
     assert.equal(ast.$filter.args[1].name, 'Data');
   });
 
-  it('should parse substringof $filter with empty string', function () {
-    const ast = parser.parse("$filter=substringof('', Data)");
+  it('should parse contains $filter with empty string', function () {
+    const ast = parser.parse("$filter=contains('', Data)");
 
     assert.equal(ast.$filter.args[0].type, 'literal');
     assert.equal(ast.$filter.args[0].value, '');
   });
 
-  it('should parse substringof $filter with string containing quote', function () {
-    const ast = parser.parse("$filter=substringof('ng''inx', Data)");
+  it('should parse contains $filter with string containing quote', function () {
+    const ast = parser.parse("$filter=contains('ng''inx', Data)");
     assert.equal(ast.$filter.args[0].type, 'literal');
     assert.equal(ast.$filter.args[0].value, "ng'inx");
   });
 
-  it('should parse substringof $filter with string starting with quote', function () {
-    const ast = parser.parse("$filter=substringof('''nginx', Data)");
+  it('should parse contains $filter with string starting with quote', function () {
+    const ast = parser.parse("$filter=contains('''nginx', Data)");
 
     assert.equal(ast.$filter.args[0].type, 'literal');
     assert.equal(ast.$filter.args[0].value, "'nginx");
   });
 
-  it('should parse substringof $filter with string ending with quote', function () {
-    const ast = parser.parse("$filter=substringof('nginx''', Data)");
+  it('should parse contains $filter with string ending with quote', function () {
+    const ast = parser.parse("$filter=contains('nginx''', Data)");
 
     assert.equal(ast.$filter.args[0].type, 'literal');
     assert.equal(ast.$filter.args[0].value, "nginx'");
   });
 
-  it('should parse substringof eq true in $filter', function () {
-    const ast = parser.parse("$filter=substringof('nginx', Data) eq true");
+  it('should parse contains eq true in $filter', function () {
+    const ast = parser.parse("$filter=contains('nginx', Data) eq true");
 
     assert.equal(ast.$filter.type, 'eq');
 
     assert.equal(ast.$filter.left.type, 'functioncall');
-    assert.equal(ast.$filter.left.func, 'substringof');
+    assert.equal(ast.$filter.left.func, 'contains');
     assert.equal(ast.$filter.left.args[0].type, 'literal');
     assert.equal(ast.$filter.left.args[0].value, 'nginx');
     assert.equal(ast.$filter.left.args[1].type, 'property');
